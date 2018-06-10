@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class DbBase {
 	public static void baseUpdate(String sql,Object...params) throws SQLException {
 		Connection conn = null;
