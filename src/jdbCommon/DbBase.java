@@ -10,8 +10,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class DbBase {
+	final static Logger logger = Logger.getLogger("DbBase");
+	/**
+	 * 执行更新 插入 删除 操作
+	 * @param sql
+	 * @param params
+	 * @throws SQLException
+	 */
 	public static void baseUpdate(String sql,Object...params) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -24,15 +32,20 @@ public class DbBase {
 				}			
 			}
 			DbUtils.execUpdate(ps);
-		} catch (SQLException e) {
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		} catch (SQLException | ClassNotFoundException e) {
+			logger.warning("baseUpdate" + e.getMessage());
 		}finally {
 			DbUtils.close(conn, ps);
 		}
 	}
-	
+	/**
+	 * 查询单个
+	 * @param sql
+	 * @param cls
+	 * @param args
+	 * @return
+	 * @throws SQLException
+	 */
 	public static<T> T queryForSingle(String sql,Class<T> cls,Object...args) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -81,18 +94,8 @@ public class DbBase {
 				}
 			}
 	
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			logger.warning("queryForSingle" + e.getMessage());
 		}finally {
 			DbUtils.close(conn, ps, rs);
 		}
@@ -107,7 +110,13 @@ public class DbBase {
 		}
 		return false;
 	}
-	
+	/**
+	 * 查询多少记录
+	 * @param sql
+	 * @param args
+	 * @return
+	 * @throws SQLException
+	 */
 	public static int queryForCount(String sql, Object...args) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -122,15 +131,20 @@ public class DbBase {
 			}
 			return DbUtils.execQueryCount(ps);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
+			logger.warning("queryForCount" + e.getMessage());
+		} finally {
 			DbUtils.close(conn, ps, rs);
 		}
 		return -1;
 	}
-
+	/**
+	 * 查询集合
+	 * @param sql
+	 * @param cls
+	 * @param args
+	 * @return
+	 * @throws SQLException
+	 */
 	public static<T> List<T> baseQuery(String sql, Class<T> cls, Object...args) throws SQLException {
 		List<T> list = new ArrayList<>();
 		Connection conn = null;
@@ -158,15 +172,7 @@ public class DbBase {
 						continue;
 					}
 					if(hasFieled(cls, columnName)) {
-						try {
-							f = cls.getDeclaredField(columnName);
-						} catch (NoSuchFieldException e) {
-
-							e.printStackTrace();
-						} catch (SecurityException e) {
-
-							e.printStackTrace();
-						}
+						f = cls.getDeclaredField(columnName);
 						f.setAccessible(true);
 						if(v instanceof BigDecimal) {
 							BigDecimal val = (BigDecimal) v;
@@ -182,16 +188,8 @@ public class DbBase {
 				}
 				list.add(o);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-
-			e.printStackTrace();
+		} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | InstantiationException | NoSuchFieldException | SecurityException e) {
+			logger.warning("baseQuery" + e.getMessage());
 		}finally {
 			DbUtils.close(conn, ps, rs);
 		}
