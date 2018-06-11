@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 public class DbBase {
 	final static Logger logger = Logger.getLogger("DbBase");
+	
 	/**
 	 * 执行更新 插入 删除 操作
 	 * @param sql
